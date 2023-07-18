@@ -10,7 +10,7 @@
             - Modified task data POST to prevent users creating tasks/projects in their personal workspace.
             - Modified task data POST to check if the uploaded files would push the organization over their GB_limit
 
-### Requirements (summarised from Berend's old readme included below). 
+### Requirements 
 - Download latest podman-compose (Develop) Stable = 1.0.3 and develop is 1.0.4
 - Set podman storage
     - mkdir ~/.config/containers
