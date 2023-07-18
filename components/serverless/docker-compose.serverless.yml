@@ -7,7 +7,7 @@ services:
       - cvat
     volumes:
       - /tmp:/tmp
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/podman.sock:/var/run/docker.sock:ro
     environment:
       http_proxy:
       https_proxy:
@@ -26,8 +26,8 @@ services:
     environment:
       CVAT_SERVERLESS: 1
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.containers.internal:127.0.0.1"
 
   cvat_worker_annotation:
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.containers.internal:127.0.0.1"

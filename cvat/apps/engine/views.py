@@ -1169,6 +1169,33 @@ class TaskViewSet(viewsets.GenericViewSet, mixins.ListModelMixin,
         self._object = self.get_object() # call check_object_permissions as well
         if request.method == 'POST' or request.method == 'OPTIONS':
             task_data = self._object.data
+            client_files = self._get_request_client_files(request)
+
+            if self._object.project:
+                if not self._object.project.organization:
+                    return Response(data='Project must be attached to an organisation',
+                        status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    org_obj = self._object.project.organization
+
+            if not self._object.organization:
+                return Response(data='Task must be attached to an organisation',
+                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                org_obj = self._object.organization
+
+
+            if client_files:
+                client_file_size = 0
+                for client_file in client_files:
+                    client_file_size+= client_file['file'].size
+                print(f"TOTAL FILE SIZE: {client_file_size}")
+            
+                if org_obj.check_filesize(client_file_size):
+                    return Response(data='FILES WOULD EXCEED ORGANISATION QUOTA',
+                        status=status.HTTP_400_BAD_REQUEST)
+                     	    
+
             if not task_data:
                 task_data = Data.objects.create()
                 task_data.make_dirs()

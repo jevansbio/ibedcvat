@@ -16,9 +16,22 @@ class Organization(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     contact = models.JSONField(blank=True, default=dict)
+    GB_limit = models.IntegerField(default=0)
 
     owner = models.ForeignKey(get_user_model(), null=True,
         blank=True, on_delete=models.SET_NULL, related_name='+')
+
+    def get_filesize(self):
+        filesize = 0
+        noproject = self.tasks.filter(project__isnull=True)
+        for x in noproject :
+            filesize += x.get_filesize()
+        for x in self.projects.all():
+            filesize += x.get_filesize()
+        return filesize
+
+    def check_filesize(self, newfilesize):
+        return (self.get_filesize()+newfilesize)>self.GB_limit*1073741824
 
     def __str__(self):
         return self.slug

@@ -334,6 +334,13 @@ class Project(models.Model):
     target_storage = models.ForeignKey('Storage', null=True, default=None,
         blank=True, on_delete=models.SET_NULL, related_name='+')
 
+    def get_filesize(self):
+        alltasks = list(self.tasks)
+        filesize = 0
+        for x in alltasks:
+            filesize += x.get_filesize()
+        return filesize
+
     def get_labels(self):
         return self.label_set.filter(parent__isnull=True)
 
@@ -439,6 +446,10 @@ class Task(models.Model):
         blank=True, on_delete=models.SET_NULL, related_name='+')
     target_storage = models.ForeignKey('Storage', null=True, default=None,
         blank=True, on_delete=models.SET_NULL, related_name='+')
+    
+    def get_filesize(self):
+        allfiles = list(self.data.client_files.all().values_list('file',flat=True))
+        return sum([os.stat(file).st_size for file in allfiles])
 
     # Extend default permission model
     class Meta:

@@ -8,7 +8,7 @@ import hashlib
 
 from django.utils.functional import SimpleLazyObject
 from django.http import Http404, HttpResponseBadRequest, HttpResponseRedirect
-from rest_framework import views, serializers
+from rest_framework import views, serializers, status
 from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.permissions import AllowAny
 from django.conf import settings
@@ -156,6 +156,25 @@ class RegisterViewEx(RegisterView):
             data['email_verification_required'] = False
             data['key'] = user.auth_token.key
         return data
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        data = self.get_response_data(user)
+        user.is_active=False
+        user.save()
+        if data:
+            response = Response(
+                data,
+                status=status.HTTP_201_CREATED,
+                headers=headers,
+            )
+        else:
+            response = Response(status=status.HTTP_204_NO_CONTENT, headers=headers)
+
+        return response       
 
 def _etag(etag_func):
     """
