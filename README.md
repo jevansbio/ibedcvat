@@ -1,3 +1,35 @@
+### 18-07-2023
+- Features implemented
+    - Modified compose settings to run containers on podman
+    - modified cvat_server
+        - Modified authentication - requires email confirmation and then manual activation by admins.
+            - Included migration to automatically set site name/domain
+        - Implemented per-organisation data limits.
+            - Modified organization model to include GB_limit
+            - Added model methods to  organization, task, project to calculate the filesize of the data models attached.
+            - Modified task data POST to prevent users creating tasks/projects in their personal workspace.
+            - Modified task data POST to check if the uploaded files would push the organization over their GB_limit
+
+### Requirements (summarised from Berend's old readme included below). 
+- Download latest podman-compose (Develop) Stable = 1.0.3 and develop is 1.0.4
+- Set podman storage
+    - mkdir ~/.config/containers
+    - create ~/.config/containers/storage.conf
+    - edit default config file and set storage location
+      ```
+         runroot = "/data/podman_storage/runroot"
+         graphroot = "/data/podman_storage/graphroot"
+      ```
+- export environmental variables for CVAT_HOST, CVAT_EMAIL and CVAT_EMAIL_PASSWORD
+- Create podman socket (location currently hard coded in our compose file)
+- Start podman socket - set to run indefinitey and not block
+  
+  ```podman system service --time=0 unix:///data/podman.sock &```
+- Build latest version of cvat_server container.
+- Service should now be able to run.      
+  
+
+## Old readme
 - Full working on Ubuntu 22.04 with Podman written on 17-03-2023
   - download CVAT
   - download latest podman-compose (Develop) Stable = 1.0.3 and develop is 1.0.4
