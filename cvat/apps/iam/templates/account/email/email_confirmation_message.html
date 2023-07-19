@@ -187,12 +187,18 @@
           <!-- start copy -->
           <tr>
             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-              {% blocktrans with site_name=current_site.name site_domain=current_site.domain %}
+              {% blocktrans with site_name=current_site.name site_domain=current_site.domain username=user.username first_name=user.first_name last_name=user.last_name %}
               <p>
                 Thank you for signing up for CVAT!
               </p>
               <p style="margin: 0;">
-                Please confirm your email address. Once you have done this, contact Julian or Berend to activate your account.
+
+		Dear {{ first_name }} {{ last_name }}
+
+		You have registered on <strong>{{ site_name }}</strong> as {{ username }}.
+
+
+                Please confirm your email address. Once you have done this, an administrator will activate your account.
                 If you didn't create an account with <strong>{{ site_name }}</strong>,
                 you can safely delete this email.
               </p>
