@@ -223,7 +223,7 @@ class Data(models.Model):
     image_quality = models.PositiveSmallIntegerField(default=50)
     start_frame = models.PositiveIntegerField(default=0)
     stop_frame = models.PositiveIntegerField(default=0)
-    frame_filter = models.CharField(max_length=256, default="", blank=True)
+    frame_filter = models.CharField(max_length=512, default="", blank=True)
     compressed_chunk_type = models.CharField(max_length=32, choices=DataChoice.choices(),
         default=DataChoice.IMAGESET)
     original_chunk_type = models.CharField(max_length=32, choices=DataChoice.choices(),
@@ -335,7 +335,7 @@ class Project(models.Model):
         blank=True, on_delete=models.SET_NULL, related_name='+')
 
     def get_filesize(self):
-        alltasks = list(self.tasks)
+        alltasks = list(self.tasks.all())
         filesize = 0
         for x in alltasks:
             filesize += x.get_filesize()
@@ -448,8 +448,11 @@ class Task(models.Model):
         blank=True, on_delete=models.SET_NULL, related_name='+')
     
     def get_filesize(self):
-        allfiles = list(self.data.client_files.all().values_list('file',flat=True))
-        return sum([os.stat(file).st_size for file in allfiles])
+        if self.data:
+            allfiles = list(self.data.client_files.all().values_list('file',flat=True))
+            return sum([os.stat(file).st_size for file in allfiles])
+        else:
+            return 0
 
     # Extend default permission model
     class Meta:
@@ -531,7 +534,7 @@ def upload_path_handler(instance, filename):
 class ClientFile(models.Model):
     data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True, related_name='client_files')
     file = models.FileField(upload_to=upload_path_handler,
-        max_length=1024, storage=MyFileSystemStorage())
+        max_length=2048, storage=MyFileSystemStorage())
 
     class Meta:
         default_permissions = ()
@@ -544,7 +547,7 @@ class ClientFile(models.Model):
 # For server files on the mounted share
 class ServerFile(models.Model):
     data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True, related_name='server_files')
-    file = models.CharField(max_length=1024)
+    file = models.CharField(max_length=2048)
 
     class Meta:
         default_permissions = ()
@@ -557,7 +560,7 @@ class ServerFile(models.Model):
 # For URLs
 class RemoteFile(models.Model):
     data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True, related_name='remote_files')
-    file = models.CharField(max_length=1024)
+    file = models.CharField(max_length=2048)
 
     class Meta:
         default_permissions = ()
@@ -571,7 +574,7 @@ class RemoteFile(models.Model):
 class RelatedFile(models.Model):
     data = models.ForeignKey(Data, on_delete=models.CASCADE, related_name="related_files", default=1, null=True)
     path = models.FileField(upload_to=upload_path_handler,
-                            max_length=1024, storage=MyFileSystemStorage())
+                            max_length=2048, storage=MyFileSystemStorage())
     primary_image = models.ForeignKey(Image, on_delete=models.CASCADE, related_name="related_files", null=True)
 
     class Meta:
