@@ -823,7 +823,7 @@ class DataSerializer(serializers.ModelSerializer):
     https://opencv.github.io/cvat/docs/manual/basics/create_an_annotation_task/#advanced-configuration
     """
 
-    image_quality = serializers.IntegerField(min_value=0, max_value=100,
+    image_quality = serializers.IntegerField(min_value=0, max_value=100, default=75,
         help_text="Image quality to use during annotation")
     use_zip_chunks = serializers.BooleanField(default=False,
         help_text=textwrap.dedent("""\
@@ -1364,7 +1364,7 @@ class PluginsSerializer(serializers.Serializer):
 
 class DataMetaReadSerializer(serializers.ModelSerializer):
     frames = FrameMetaSerializer(many=True, allow_null=True)
-    image_quality = serializers.IntegerField(min_value=0, max_value=100)
+    image_quality = serializers.IntegerField(min_value=0, max_value=100, default = 75)
     deleted_frames = serializers.ListField(child=serializers.IntegerField(min_value=0))
     included_frames = serializers.ListField(
         child=serializers.IntegerField(min_value=0), allow_null=True, required=False,
