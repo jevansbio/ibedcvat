@@ -9,9 +9,19 @@
             - Added model methods to  organization, task, project to calculate the filesize of the data models attached.
             - Modified task data POST to prevent users creating tasks/projects in their personal workspace.
             - Modified task data POST to check if the uploaded files would push the organization over their GB_limit
-
+    - Modified cvat ui to allow a longer timeout before failing attempts to get health check API.
 ### Requirements 
 - Download latest podman-compose (Develop) Stable = 1.0.3 and develop is 1.0.4
+
+- export environmental variables for CVAT_HOST, CVAT_EMAIL and CVAT_EMAIL_PASSWORD
+- Create podman socket (location currently hard coded in our compose file)
+- Start podman socket - set to run indefinitey and not block
+  
+  ```podman system service --time=0 unix:///home/ibedcvat/cvatdata/podman.sock &```
+- Build latest version of cvat_server, cvat_ui container.
+- Service should now be able to run.      
+  
+### Not strictly required but probably needed to allow podman functionality on our VM
 - Set podman storage
     - mkdir ~/.config/containers
     - create ~/.config/containers/storage.conf
@@ -20,14 +30,17 @@
          runroot = "/data/podman_storage/runroot"
          graphroot = "/data/podman_storage/graphroot"
       ```
-- export environmental variables for CVAT_HOST, CVAT_EMAIL and CVAT_EMAIL_PASSWORD
-- Create podman socket (location currently hard coded in our compose file)
-- Start podman socket - set to run indefinitey and not block
-  
-  ```podman system service --time=0 unix:///data/podman.sock &```
-- Build latest version of cvat_server container.
-- Service should now be able to run.      
-  
+- Set podman tmp file:
+    - create ~/.config/containers/containers.conf (can be obtained from here: https://github.com/containers/common/blob/main/pkg/config/containers.conf)
+    - edit default config and set tmp location
+      ```
+        image_copy_tmp_dir="/home/ibedcvat/podmanstorage/tmp"
+      ```
+    - Set TMPDIR env var to
+      ```
+        /home/ibedcvat/podmanstorage/tmp
+      ```
+
 
 ## Old readme
 - Full working on Ubuntu 22.04 with Podman written on 17-03-2023
