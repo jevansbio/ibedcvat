@@ -12,7 +12,7 @@ services:
       POSTGRES_DB: cvat
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - cvat_db:/var/lib/postgresql/data
+      - /home/ibedcvat/cvatdata/cvat_db:/var/lib/postgresql/data
     networks:
       - cvat
 
@@ -61,9 +61,9 @@ services:
         PathPrefix(`/api/`, `/git/`, `/opencv/`, `/static/`, `/admin`, `/documentation/`, `/django-rq`)
       - traefik.http.routers.cvat.entrypoints=web
     volumes:
-      - cvat_data:/home/django/data
+      - /ibed/cvat/cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
-      - cvat_logs:/home/django/logs
+      - /ibed/cvat/cvat_logs:/home/django/logs
     networks:
       cvat:
         aliases:
@@ -88,9 +88,9 @@ services:
       NUMPROCS: 1
     command: -c supervisord/utils.conf
     volumes:
-      - cvat_data:/home/django/data
+      - /ibed/cvat/cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
-      - cvat_logs:/home/django/logs
+      - /ibed/cvat/cvat_logs:/home/django/logs
     networks:
       - cvat
 
@@ -111,9 +111,9 @@ services:
       SMOKESCREEN_OPTS: ${SMOKESCREEN_OPTS:-}
     command: -c supervisord/worker.import.conf
     volumes:
-      - cvat_data:/home/django/data
+      - /ibed/cvat/cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
-      - cvat_logs:/home/django/logs
+      - /ibed/cvat/cvat_logs:/home/django/logs
     networks:
       - cvat
 
@@ -134,9 +134,9 @@ services:
       NUMPROCS: 2
     command: -c supervisord/worker.export.conf
     volumes:
-      - cvat_data:/home/django/data
+      - /ibed/cvat/cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
-      - cvat_logs:/home/django/logs
+      - /ibed/cvat/cvat_logs:/home/django/logs
     networks:
       - cvat
 
@@ -157,9 +157,9 @@ services:
       NUMPROCS: 1
     command: -c supervisord/worker.annotation.conf
     volumes:
-      - cvat_data:/home/django/data
+      - /ibed/cvat/cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
-      - cvat_logs:/home/django/logs
+      - /ibed/cvat/cvat_logs:/home/django/logs
     networks:
       - cvat
 
@@ -181,9 +181,9 @@ services:
       SMOKESCREEN_OPTS: ${SMOKESCREEN_OPTS:-}
     command: -c supervisord/worker.webhooks.conf
     volumes:
-      - cvat_data:/home/django/data
+      - /ibed/cvat/cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
-      - cvat_logs:/home/django/logs
+      - /ibed/cvat/cvat_logs:/home/django/logs
     networks:
       - cvat
 
@@ -203,9 +203,9 @@ services:
       NUMPROCS: 1
     command: -c supervisord/worker.quality_reports.conf
     volumes:
-      - cvat_data:/home/django/data
+      - /ibed/cvat/cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
-      - cvat_logs:/home/django/logs
+      - /ibed/cvat/cvat_logs:/home/django/logs
     networks:
       - cvat
 
@@ -265,7 +265,7 @@ services:
       DJANGO_LOG_VIEWER_HOST: grafana
       DJANGO_LOG_VIEWER_PORT: 3000
     volumes:
-      - /data/podman.sock:/var/run/docker.sock:ro
+      - /home/ibedcvat/cvatdata/podman.sock:/var/run/docker.sock:ro
       - ./components/analytics/grafana_conf.yml:/etc/traefik/rules/grafana_conf.yml:ro
     networks:
       - cvat
@@ -302,7 +302,7 @@ services:
           - clickhouse
     volumes:
       - ./components/analytics/clickhouse/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
-      - cvat_events_db:/var/lib/clickhouse/
+      - /home/ibedcvat/cvatdata/cvat_events_db:/var/lib/clickhouse/
 
   cvat_vector:
     container_name: cvat_vector
